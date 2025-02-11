@@ -27,10 +27,8 @@ x-airflow-common: &airflow-common
     - ./airflow/dags:/opt/airflow/dags
     - ./airflow/plugins:/opt/airflow/plugins
     - ./airflow/logs:/opt/airflow/logs
-    - ./datahub/datahub-token.json:/etc/service-account/datahub-token.json
     - ./dbt:/opt/airflow/dbt
     - ./dbt/profiles.yml:/home/airflow/.dbt
-    - ./great_expectations:/opt/airflow/great_expectations
     - ./migrations:/opt/airflow/migrations
 
 services:
@@ -152,4 +150,3 @@ services:
       resources:
         reservations:
           cpus: '4.0'
-    command: clickhouse server

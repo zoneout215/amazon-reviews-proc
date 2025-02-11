@@ -1,0 +1,12 @@
+__pycache__/
+.idea/
+venv/
+airflow/logs/*
+*.pyc
+clickhouse/logs/*
+clickhouse/data/*
+dbt/logs/*
+dbt/models/target/*
+hadoop/datanode1/
+hadoop/datanode2/
+hadoop/namenode/
