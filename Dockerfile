@@ -1,93 +1,42 @@
-FROM hadoop-base:3.3.6
+# Use Apache Airflow as the base image
+FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.9
 
-# Never prompt the user for choices on installation/configuration of packages
-ENV DEBIAN_FRONTEND noninteractive
-ENV TERM linux
+# Set environment varialbes
+ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
+ENV FLYWAY_VERSION 7.7.3
 
-# Airflow
-ARG AIRFLOW_VERSION=2.3.2
-ARG AIRFLOW_USER_HOME=/home/airflow
-ARG AIRFLOW_DEPS=""
-ARG PYTHON_DEPS=""
-ENV AIRFLOW_HOME=${AIRFLOW_USER_HOME}
+# Set the working directory for convenience
+WORKDIR /opt/airflow
 
-# Define en_US.
-ENV LANGUAGE en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-ENV LC_CTYPE en_US.UTF-8
-ENV LC_MESSAGES en_US.UTF-8
+# Switch to ROOT user for installing mandatory packages
+USER root
 
-# Disable noisy "Handling signal" log messages:
-ENV GUNICORN_CMD_ARGS --log-level WARNING
+# Install mandatory packages
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+        vim \
+ && apt-get autoremove -yqq --purge \
+ && apt-get clean \
+ && apt-get install -y libpq-dev gcc \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN set -ex \
-    && buildDeps=' \
-    build-essential \
-    libblas-dev \
-    libatlas-base-dev \
-    freetds-dev \
-    libkrb5-dev \
-    libsasl2-dev \
-    libssl-dev \
-    libffi-dev \
-    libpq-dev \
-    git \
-    ' \
-    && add-apt-repository --remove ppa:deadsnakes/ppa \
-    && apt-get update -yqq \
-    && apt-get upgrade -yqq \
-    && apt-get install -yqq --no-install-recommends \
-    $buildDeps \
-    freetds-bin \
-    build-essential \
-    default-libmysqlclient-dev \
-    apt-utils \
-    curl \
-    rsync \
-    netcat-traditional \
-    locales \
-    gcc \
-    libpq5 \
-    && sed -i 's/^# en_US.UTF-8 UTF-8$/en_US.UTF-8 UTF-8/g' /etc/locale.gen \
-    && locale-gen \
-    && update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
-    && useradd -ms /bin/bash -d ${AIRFLOW_USER_HOME} airflow \
-    && pip install -U pip setuptools wheel \
-    && pip install pytz \
-    && pip install pyOpenSSL \
-    && pip install ndg-httpsclient \
-    && pip install pyasn1 \
-    && pip install cython \
-    && pip install apache-airflow[crypto,celery,postgres,jdbc,mysql]==${AIRFLOW_VERSION} \
-    && pip install 'redis==3.2' \
-    && pip install SQLAlchemy Flask-SQLAlchemy==2.4.4 \
-    && if [ -n "${PYTHON_DEPS}" ]; then pip install ${PYTHON_DEPS}; fi \
-    && apt-get purge --auto-remove -yqq $buildDeps \
-    && apt-get autoremove -yqq --purge \
-    && apt-get clean \
-    && rm -rf \
-    /var/lib/apt/lists/* \
-    /tmp/* \
-    /var/tmp/* \
-    /usr/share/man \
-    /usr/share/doc \
-    /usr/share/doc-base
+# Copy entrypoint script to the container
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
-ADD entrypoint.sh /entrypoint.sh
-
-RUN chmod a+x /entrypoint.sh
-
-ADD airflow.cfg ${AIRFLOW_USER_HOME}/airflow.cfg
-
-RUN chown -R airflow: ${AIRFLOW_USER_HOME}
-
-EXPOSE 8080 5555 8793
-
+# Switch back to the default Airflow user
 USER airflow
 
-WORKDIR ${AIRFLOW_USER_HOME}
+# Copy requirements.txt into the Docker container
+COPY requirements.txt /opt/airflow/requirements.txt
 
+# Install needed Python packages
+RUN pip install --upgrade pip \
+ && pip install --trusted-host pypi.python.org -r /opt/airflow/requirements.txt \
+ && mkdir -p /tmp/downloads/data
+
+# Copy your dags folder to the container
+COPY airflow/dags /opt/airflow/dags
+
+# Run the ini script
 ENTRYPOINT ["/entrypoint.sh"]
-
-CMD ["webserver"]

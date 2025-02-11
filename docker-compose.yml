@@ -1,65 +1,155 @@
-ersion: "2.1"
+version: '3.8'
+
+x-trg-env2: &trg-env2
+  CLICKHOUSE_HOST: "host.docker.internal"
+  CLICKHOUSE_DB: default
+  CLICKHOUSE_USER: default
+  CLICKHOUSE_PASSWORD: ''
+  CLICKHOUSE_PORT: 9000 
+
 x-airflow-common: &airflow-common
-  image: ${AIRFLOW_IMAGE_NAME:-airflow-hadoop-base:3.3.6}
-  environment:
-    - AIRFLOW_HOME=/home/airflow
-    - AIRFLOW__CORE_dags_folder=/home/airflow/dags
-    - AIRFLOW__CORE__EXECUTOR=LocalExecutor
-    - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-    # For backward compatibility, with Airflow <2.3
-    - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
-    - AIRFLOW__CORE__FERNET_KEY=FB0o_zt4e3Ziq3LdUUO7F2Z95cvFFx16hU8jTeR1ASM=
-    - AIRFLOW__CORE__LOAD_EXAMPLES=False
-    - AIRFLOW__CORE__LOGGING_LEVEL=INFO
+  build:
+    context: .
+    dockerfile: Dockerfile
+  environment: &airflow-environment
+    AIRFLOW__CORE__REMOTE_LOGGING: 'False'
+    AIRFLOW__CORE__BASE_LOG_FOLDER: '/opt/airflow/logs'
+    AIRFLOW__CORE__DAGS_FOLDER: '/opt/airflow/dags'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
+    AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080
+    HDFS_URI: 'http://namenode:9870'
+    <<: *trg-env2
+  env_file:
+    - local.env
+  restart: always
   volumes:
-    - ./output:/home/airflow/output
-    - ./dags:/home/airflow/dags
-    - ./plugins:/home/airflow/plugins
-    - ./logs:/home/airflow/logs
-    - ./data/:/hadoop-data/input
-    - ./map_reduce/:/hadoop-data/map_reduce
-  depends_on:
-    - postgres
-  networks:
-    - hadoop_network
+    - ./airflow/dags:/opt/airflow/dags
+    - ./airflow/plugins:/opt/airflow/plugins
+    - ./airflow/logs:/opt/airflow/logs
+    - ./datahub/datahub-token.json:/etc/service-account/datahub-token.json
+    - ./dbt:/opt/airflow/dbt
+    - ./dbt/profiles.yml:/home/airflow/.dbt
+    - ./great_expectations:/opt/airflow/great_expectations
+    - ./migrations:/opt/airflow/migrations
 
 services:
+  object_store_namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - "9870:9870"
+      - "9001:9000"
+    expose:
+      - "9001"
+    volumes:
+      - ./hadoop/namenode:/hadoop/dfs/name
+    environment:
+      CLUSTER_NAME: 'test'
+    env_file:
+      - ./hadoop/hadoop.env
+
+  object_store_datanode_1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode1
+    restart: always
+    ports:
+      - "9864:9864"
+    volumes:
+      - ./hadoop/datanode1:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: 'namenode:9870'
+    env_file:
+      - ./hadoop/hadoop.env
+
+  object_store_datanode_2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode2
+    restart: always
+    ports:
+      - "9865:9864"
+    volumes:
+      - ./hadoop/datanode2:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: 'namenode:9870'
+    env_file:
+      - ./hadoop/hadoop.env
+
   postgres:
     image: postgres:13
+    container_name: postgres
     environment:
-      - POSTGRES_USER=airflow
-      - POSTGRES_PASSWORD=airflow
-      - POSTGRES_DB=airflow
-      - POSTGRES_PORT=5432
-    ports:
-      - 5432:5432
-    networks:
-      - hadoop_network
-
-  airflow-init:
-    <<: *airflow-common
-    container_name: airflow_init
-    entrypoint: /bin/bash
-    command:
-      - -c
-      - airflow users list || ( airflow db init && airflow db upgrade && airflow users create --role Admin --username airflow --password airflow --email airflow@airflow.com --firstname airflow --lastname airflow )
-    restart: on-failure
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
 
   airflow-webserver:
     <<: *airflow-common
-    command: airflow webserver
+    container_name: airflow-webserver
+    environment:
+      <<: *airflow-environment
+      AIRFLOW__CORE__EXECUTOR: "LocalExecutor"
+      AIRFLOW__CORE__PARALLELISM: 8
+      AIRFLOW__CORE__DAG_CONCURRENCY: 8
     ports:
-      - 8080:8080
-    container_name: airflow_webserver
-    restart: always
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - postgres
+    command: webserver
 
   airflow-scheduler:
     <<: *airflow-common
-    command: airflow scheduler
-    container_name: airflow_scheduler
-    restart: always
+    container_name: airflow-scheduler
+    environment:
+      <<: *airflow-environment
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - airflow-webserver
+    command: scheduler
 
-networks:
-  hadoop_network:
-    name: hadoop_network
-    external: true
+  clickhouse-server:
+    image: clickhouse/clickhouse-server
+    container_name: clickhouse-server
+    hostname: clickhouse-server
+    ports:
+      - "8123:8123" # HTTP port
+      - "9000:9000" # Native TCP port
+    expose:
+      - "9000"
+    environment: 
+      CLICKHOUSE_HOST: clickhouse-server
+      CLICKHOUSE_DB: clickhouse
+      CLICKHOUSE_USER: clickhouse
+      CLICKHOUSE_PASSWORD: clickhouse
+      CLICKHOUSE_PORT: 9000 
+      CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
+    volumes:
+      - ./clickhouse/clickhouse_data:/var/lib/clickhouse # Persist data
+      - ./clickhouse/logs/:/var/log/clickhouse-server
+      - ./clickhouse/default-user.xml:/etc/clickhouse-server/users.d/default-user.xml
+      - ./clickhouse/users.xml:/etc/clickhouse-server/users.xml
+    ulimits:
+      nofile: 262144
+    deploy: 
+      resources:
+        reservations:
+          cpus: '4.0'
+    command: clickhouse server
