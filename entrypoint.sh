@@ -16,5 +16,12 @@ airflow users create \
      -l user \
      -p admin
 
+# airflow connections dd 'clickhouse' \
+#     --conn-type 'sqlite' \
+#     --conn-host 'clickhouse' \
+#     --conn-login 'default' \
+#     --conn-password '' \
+#     --conn-port '9000'
+
 # Execute the command passed from docker-compose
 exec airflow "$@"

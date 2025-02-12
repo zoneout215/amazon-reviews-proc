@@ -7,15 +7,13 @@
 
 This project is a multi-service data processing platform orchestrated with Docker Compose. It integrates:
 - Apache Airflow for workflow orchestration
-- PostgreSQL as the relational database
-- ClickHouse for analytical processing
+- PostgreSQL as the relational database for Airflow metadata
+- ClickHouse for analytical processing 
 - dbt for data modeling and transformation
 - Hadoop (NameNode and DataNodes) for object storage
 - Docker compose for service management
 
 # Startup Manual
-
-
 
 1. Ensure Docker and Docker Compose are installed.
 2. Clone this repository.
@@ -25,7 +23,8 @@ This project is a multi-service data processing platform orchestrated with Docke
    docker-compose up -d --build
    ```
 5. Access the Airflow webserver at [http://localhost:8080](http://localhost:8080).
-6. Monitor containers and logs as needed.
+6. Browse Hadoop storage at [Hadoop](http://localhost:9870/explorer.html#/).
+7. Monitor containers and logs as needed.
 
 # Airflow Pipeline Steps
 

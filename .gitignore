@@ -11,3 +11,4 @@ dbt/target/*
 hadoop/datanode1/
 hadoop/datanode2/
 hadoop/namenode/
+dbt/.user.yml

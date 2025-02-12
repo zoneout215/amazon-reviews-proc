@@ -16,7 +16,7 @@ AS
         created_at,
     FROM
         default.raw_data_metadata AS m
-    LIMIT 10;
+    LIMIT 52877139;
 
 CREATE OR REPLACE VIEW default.staging_items
 AS 
@@ -33,4 +33,4 @@ AS
         created_at
     FROM
         default.raw_data_items AS r
-    LIMIT 10;
+    LIMIT 52877139;

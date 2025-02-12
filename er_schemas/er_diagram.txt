@@ -1,0 +1,46 @@
+// Database schema for Amazon product data warehouse
+Table core_dwh_dim_product {
+  asin varchar [primary key]
+  description text
+  title varchar
+  price numeric
+  imUrl varchar
+}
+
+Table core_dwh_dim_category {
+  category_id integer [primary key]
+  category_name varchar
+}
+
+Table core_dwh_fact_sales_rank {
+  product_asin varchar
+  category_id integer
+  rank integer
+}
+
+Table core_dwh_fact_product_category {
+  product_asin varchar
+  category_id integer
+}
+
+Table core_dwh_fact_product_related_product {
+  product_asin varchar
+  related_asin varchar
+}
+
+Table core_dwh_fact_rating {
+  rating_id UUid
+  reviewerID varchar
+  item varchar
+  rating numeric
+  event_timestamp timestamp
+}
+
+// Define relationships
+Ref: core_dwh_fact_sales_rank.product_asin > core_dwh_dim_product.asin
+Ref: core_dwh_fact_sales_rank.category_id > core_dwh_dim_category.category_id
+Ref: core_dwh_fact_product_category.product_asin > core_dwh_dim_product.asin
+Ref: core_dwh_fact_product_category.category_id > core_dwh_dim_category.category_id
+Ref: core_dwh_fact_product_related_product.product_asin > core_dwh_dim_product.asin
+Ref: core_dwh_fact_product_related_product.related_asin > core_dwh_dim_product.asin
+Ref: core_dwh_fact_rating.item > core_dwh_dim_product.asin
