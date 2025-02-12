@@ -23,7 +23,7 @@ dag_config = {
     'schedule_interval': None,
     'max_active_runs': 1,
     'catchup': False,
-    'start_date': datetime(2024, 3, 13)
+    'start_date': datetime(2025, 2, 14)
 }
 
 with DAG(**dag_config) as dag:

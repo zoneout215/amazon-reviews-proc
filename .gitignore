@@ -7,6 +7,7 @@ clickhouse/logs/*
 clickhouse/data/*
 dbt/logs/*
 dbt/models/target/*
+dbt/target/*
 hadoop/datanode1/
 hadoop/datanode2/
 hadoop/namenode/
