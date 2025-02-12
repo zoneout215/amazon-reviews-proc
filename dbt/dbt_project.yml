@@ -1,0 +1,26 @@
+name: 'movie_rating'
+version: '1.0.0'
+config-version: 2
+
+profile: "clickhouse_imdb"
+
+model-paths: ["models"]
+test-paths: ["tests"]
+seed-paths: ["data"]
+clean-targets:
+  - "target"
+  - "dbt/target"
+
+models:
+  movie_rating:
+    staging:
+      schema: default
+    dimensions:
+      schema: default
+#      schema: default
+    facts:
+      schema: default
+#      schema: default
+    marts:
+      dm_rating:
+        schema: default

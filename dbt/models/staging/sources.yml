@@ -1,0 +1,7 @@
+version: 2
+
+sources:
+  - name: default
+    tables:
+      - name: staging_metadata
+      - name: staging_items
