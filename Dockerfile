@@ -3,7 +3,6 @@ FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.9
 
 # Set environment varialbes
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
-ENV FLYWAY_VERSION 7.7.3
 
 # Set the working directory for convenience
 WORKDIR /opt/airflow
