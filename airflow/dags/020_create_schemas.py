@@ -8,11 +8,6 @@ from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow_clickhouse_plugin.operators.clickhouse import ClickHouseOperator
 
-MY_SMALL_DWH_HOST = os.getenv('CLICKHOUSE_HOST')
-MY_SMALL_DWH_PORT = os.getenv('CLICKHOUSE_PORT')
-MY_SMALL_DWH_DB = os.getenv('CLICKHOUSE_DB')
-MY_SMALL_DWH_USER = os.getenv('CLICKHOUSE_USER')
-MY_SMALL_DWH_PASSWORD = os.getenv('CLICKHOUSE_PASSWORD')
 SCHEMAS_DIR = "/opt/airflow/migrations/"
 
 DEFAULT_ARGS = {
@@ -30,7 +25,7 @@ dag_config = {
     'schedule_interval': None,
     'max_active_runs': 1,
     'catchup': False,
-    'start_date': datetime(2025, 2, 14)
+    'start_date': datetime(2025, 2, 8)
 }
 
 def read_sql_file(folder_path: str, filename: str) -> List[str]:

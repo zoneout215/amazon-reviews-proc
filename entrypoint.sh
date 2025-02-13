@@ -17,11 +17,14 @@ airflow users create \
      -p admin
 
 # airflow connections dd 'clickhouse' \
-#     --conn-type 'sqlite' \
-#     --conn-host 'clickhouse' \
-#     --conn-login 'default' \
-#     --conn-password '' \
-#     --conn-port '9000'
+if ! airflow connections get 'clickhouse' > /dev/null 2>&1; then
+    airflow connections add 'clickhouse' \
+        --conn-type 'sqlite' \
+        --conn-host 'clickhouse-default' \
+        --conn-login 'default' \
+        --conn-password '' \
+        --conn-port '9000'
+fi
 
 # Execute the command passed from docker-compose
 exec airflow "$@"

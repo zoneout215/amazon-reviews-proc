@@ -16,6 +16,7 @@ def download_file(url: str, file_path: str, chunk_size: int = 524288): # in 512 
     """Downloads a file from a given URL in chunks and saves it to a local path, up to a maximum size."""
     print(f"Downloading file from {url}")
     try:
+        target_size = get_http_file_size(url)
         response = requests.get(url, stream=True, allow_redirects=True)
         response.raise_for_status()
 
@@ -25,13 +26,21 @@ def download_file(url: str, file_path: str, chunk_size: int = 524288): # in 512 
             for chunk in response.iter_content(chunk_size=chunk_size):
                 if chunk:  # Filter out keep-alive new chunks
                     f.write(chunk)
-                    downloaded_size += len(chunk)
-                    print(f"Downloaded {downloaded_size} bytes so far")
+                    downloaded_size += len(chunk) / (1024 * 1024)
+                    print(f"Downloaded {downloaded_size}/{target_size} MB ")
         print("Download complete!")
 
     except requests.RequestException as e:
         print(f"Error downloading {url}: {e}")
         raise
+
+
+def get_http_file_size(url: str) -> int:
+    """Returns the size of a file in MB given its URL."""
+    response = requests.head(url)
+    size_in_bytes = int(response.headers.get("Content-Length", 0))
+    return size_in_bytes / (1024 * 1024)
+
 
 def ensure_hdfs_directory_exists(directory_path: str):
     """Check if a directory exists in HDFS at the specified path, and if not, create it."""

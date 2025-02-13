@@ -1,7 +1,7 @@
 {{
     config(
         materialized='table',
-        alias='dm_rating_top_five_increased_rating',
+        alias='dm_rating_top_five_cat_rating',
         pre_hook=[
             "TRUNCATE TABLE {{ this }}"
         ]

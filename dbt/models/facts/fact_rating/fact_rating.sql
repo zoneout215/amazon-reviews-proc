@@ -28,7 +28,3 @@ SELECT
     event_timestamp AS event_timestamp
 FROM
     distinct_reviews AS dr
-
-
-
--- write with a table with ReplacingMergeTree engine

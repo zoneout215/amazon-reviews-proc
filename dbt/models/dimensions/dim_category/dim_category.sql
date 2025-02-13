@@ -10,10 +10,8 @@
 With category_elements AS (
     SELECT 
         DISTINCT
-        arrayJoin(
-            arrayJoin(
                 mt.categories
-                )) as category_name
+                as category_name
     FROM  {{ ref('metadata') }} AS mt
 )
 

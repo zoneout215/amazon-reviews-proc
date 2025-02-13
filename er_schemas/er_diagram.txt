@@ -1,46 +1,95 @@
-// Database schema for Amazon product data warehouse
+Table core_dwh_dim_category {
+  category_id uuid [primary key]
+  category_name varchar
+}
+
 Table core_dwh_dim_product {
   asin varchar [primary key]
   description text
   title varchar
   price numeric
-  imUrl varchar
-}
-
-Table core_dwh_dim_category {
-  category_id integer [primary key]
-  category_name varchar
-}
-
-Table core_dwh_fact_sales_rank {
-  product_asin varchar
-  category_id integer
-  rank integer
+  im_url varchar
 }
 
 Table core_dwh_fact_product_category {
   product_asin varchar
-  category_id integer
+  category_id uuid
 }
 
 Table core_dwh_fact_product_related_product {
   product_asin varchar
   related_asin varchar
+  label varchar
 }
 
 Table core_dwh_fact_rating {
-  rating_id UUid
+  review_id uuid [primary key]
   reviewerID varchar
   item varchar
   rating numeric
   event_timestamp timestamp
 }
 
-// Define relationships
-Ref: core_dwh_fact_sales_rank.product_asin > core_dwh_dim_product.asin
-Ref: core_dwh_fact_sales_rank.category_id > core_dwh_dim_category.category_id
+Table core_dwh_dm_rating_top_five_increased_rating {
+  category_name varchar
+  avg_category_rating numeric
+  year_month varchar
+  label varchar
+}
+
+Table core_dwh_temp_prp_bought {
+  product_asin varchar
+  related_asin varchar
+  label varchar
+}
+
+Table core_dwh_temp_prp_viewed {
+  product_asin varchar
+  related_asin varchar
+  label varchar
+}
+
+Table core_dwh_metadata {
+  asin varchar
+  categories array
+  description text
+  title varchar
+  price numeric
+  sales_rank integer
+  im_url varchar
+  related json
+  created_at timestamp
+}
+
+Table core_dwh_items {
+  reviewerID varchar
+  asin varchar
+  reviewerName varchar
+  helpful array
+  reviewText text
+  overall numeric
+  summary text
+  unixReviewTime integer
+  reviewTime varchar
+  created_at timestamp
+}
+
+// Define all relationships
 Ref: core_dwh_fact_product_category.product_asin > core_dwh_dim_product.asin
 Ref: core_dwh_fact_product_category.category_id > core_dwh_dim_category.category_id
+
 Ref: core_dwh_fact_product_related_product.product_asin > core_dwh_dim_product.asin
 Ref: core_dwh_fact_product_related_product.related_asin > core_dwh_dim_product.asin
+
 Ref: core_dwh_fact_rating.item > core_dwh_dim_product.asin
+
+Ref: core_dwh_temp_prp_bought.product_asin > core_dwh_dim_product.asin
+Ref: core_dwh_temp_prp_bought.related_asin > core_dwh_dim_product.asin
+
+Ref: core_dwh_temp_prp_viewed.product_asin > core_dwh_dim_product.asin
+Ref: core_dwh_temp_prp_viewed.related_asin > core_dwh_dim_product.asin
+
+Ref: core_dwh_metadata.asin > core_dwh_dim_product.asin
+Ref: core_dwh_items.asin > core_dwh_dim_product.asin
+
+Ref: core_dwh_dm_rating_top_five_increased_rating.category_name > core_dwh_dim_category.category_name

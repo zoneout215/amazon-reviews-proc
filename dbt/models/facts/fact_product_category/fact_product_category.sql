@@ -12,10 +12,7 @@
 WITH product_categories AS (
     SELECT 
         asin AS asin, 
-        arrayJoin(
-            arrayJoin(
-                mt.categories
-                )) as category_name     
+        mt.categories as category_name     
     FROM
         {{ ref('metadata') }} AS mt
 )

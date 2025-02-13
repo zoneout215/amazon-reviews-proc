@@ -5,6 +5,7 @@ airflow/logs/*
 *.pyc
 clickhouse/logs/*
 clickhouse/data/*
+clickhouse/clickhouse_data/*
 dbt/logs/*
 dbt/models/target/*
 dbt/target/*
@@ -12,3 +13,7 @@ hadoop/datanode1/
 hadoop/datanode2/
 hadoop/namenode/
 dbt/.user.yml
+hadoop/.DS_Store
+.DS_Store
+#TODO
+.gitignore

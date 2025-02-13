@@ -6,7 +6,7 @@ x-trg-env2: &trg-env2
   CLICKHOUSE_DB: default
   CLICKHOUSE_USER: default
   CLICKHOUSE_PASSWORD: ''
-  CLICKHOUSE_PORT: 9000 
+  CLICKHOUSE_PORT: 8123 
 
 x-airflow-common: &airflow-common
   build:
@@ -126,7 +126,7 @@ services:
     command: scheduler
 
   clickhouse-server:
-    image: clickhouse/clickhouse-server:24.12.1.1099
+    image: clickhouse/clickhouse-server:24.10.4
     container_name: clickhouse-server
     hostname: clickhouse-server
     ports:

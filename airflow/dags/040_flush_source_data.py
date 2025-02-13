@@ -10,19 +10,20 @@ DEFAULT_ARGS = {
     'owner': 'sergei.romanov',
     'depends_on_past': False,
     'email_on_failure': False,
-    'email_on_retry': False
+    'email_on_retry': False,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=1)
 }
 
 dag_config = {
-    'dag_id': '030_dbt_processing',
+    'dag_id': '040_flush_source_data',
     'default_args': DEFAULT_ARGS,
     'description': 'An Airflow DAG to flush files to local storage',
     'schedule_interval': '0 * * * *',
     'max_active_runs': 1,
     'catchup': False,
-    'start_date': datetime(2025, 2, 14),
-    'retries': 1,
-    'retry_delay': timedelta(minutes=1)
+    'start_date': datetime(2025, 2, 8),
+
 }
 
 with DAG(**dag_config) as dag:
@@ -36,7 +37,7 @@ with DAG(**dag_config) as dag:
 
     flush_items = PythonOperator(
         task_id='flush_items',
-        python_callable=flush_items
+        python_callable=flush_items, 
     )
 
     start >>[flush_items, flush_metadata] >> end
