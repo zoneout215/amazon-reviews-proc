@@ -1,3 +1,12 @@
+# Amazon Reviews Data Pipeline & Analytics
+
+Data pipeline implementation for processing Amazon product reviews using SNAP dataset (2018):
+- Reviews [source](https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz);
+- Metadata [source](https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz);
+- Source: Stanford SNAP Project (http://jmcauley.ucsd.edu/data/amazon/)
+
+This pipeline performs ETL operations for category-based review analysis, focusing on top product categories and their performance metrics.
+
 # Table of Contents
 - `airflow/` - Airflow DAGs and plugins
 - `clickhouse/` - ClickHouse configuration and initialization scripts
