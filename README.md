@@ -17,6 +17,7 @@ This pipeline performs ETL operations for category-based review analysis, focusi
 - `er-diagrams/` - Entity Relationship Diagrams text and images
 - `Dockerfile` - Airflow webserver Dockerfile
 - `requirements.txt` - Python package requirements for Airflow
+- `output.csv` - Output data mart of the top five rated categories per month with most reviewed products 
 
 # Project Overview
 

@@ -14,7 +14,7 @@ WITH distinct_reviews as (
         r.reviewerID AS reviewerID,
         r.asin AS item,
         r.rating AS rating,
-        FROM_UNIXTIME(r.unixReviewTime) AS event_timestamp
+        FROM_UNIXTIME(r.unixReviewTime) AS  event_timestamp
     FROM
         {{ source('default','staging_items') }} AS r
 ) 

@@ -15,8 +15,7 @@ AS
         JSONExtractString(m.json_string, 'related') AS related,
         created_at,
     FROM
-        default.raw_data_metadata AS m
-    LIMIT 52877139;
+        default.raw_data_metadata AS m;
 
 CREATE OR REPLACE VIEW default.staging_items
 AS 
@@ -32,5 +31,4 @@ AS
         JSONExtractString(r.json_string, 'reviewTime') AS reviewTime,
         created_at
     FROM
-        default.raw_data_items AS r
-    LIMIT 52877139;
+        default.raw_data_items AS r;

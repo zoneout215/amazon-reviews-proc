@@ -16,5 +16,4 @@ SELECT
     m.related,
     m.created_at,
 FROM
-    {{ source('default', 'staging_metadata') }} AS m
-LIMIT 10
+    {{ source('default', 'staging_metadata') }} AS m;
