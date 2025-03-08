@@ -11,12 +11,12 @@ import clickhouse_connect
 HDFS_URI = os.getenv('HDFS_URI')
 HDFS_CLIENT = InsecureClient(HDFS_URI, user='hdfs')
 
-k = os.getenv('CLICKHOUSE_HOST')
+CLICKHOUSE_HOST = os.getenv('CLICKHOUSE_HOST')
 CLICKHOUSE_PORT = 8123 #os.getenv('CLICKHOUSE_PORT')
 CLICKHOUSE_DB = os.getenv('CLICKHOUSE_DB')
 CLICKHOUSE_USER = os.getenv('CLICKHOUSE_USER')
 CLICKHOUSE_PASSWORD = os.getenv('CLICKHOUSE_PASSWORD')
-NUMBER_BATCHES = int(os.getenv('NUMBER_STAG_BATCHES'))
+NUMBER_BATCHES = os.getenv('NUMBER_STAG_BATCHES')
 BATCH_SIZE = 1000000
 
 HDFS_METADATA_PATH = '/data/items/metadata/metadata.json.gz'
@@ -92,7 +92,7 @@ def process_metadata():
     for batch in read_and_parse_from_hdfs_in_batches(HDFS_METADATA_PATH, is_metadata=True):
         ch_client.insert('default.raw_data_metadata', batch)
         total_records += len(batch)
-        print(f"Ingested {total_records} metadata records")
+        print(f"Processed {total_records} metadata records")
     ch_client.close()
 
 
@@ -105,7 +105,7 @@ def process_items():
     for batch in read_and_parse_from_hdfs_in_batches(HDFS_ITEMS_PATH):
         ch_client.insert('default.raw_data_items', batch)
         total_records += len(batch)
-        print(f"Ingested {total_records} rating records")
+        print(f"Processed {total_records} rating records")
         batch_count += 1
         if batch_count >= NUMBER_BATCHES:
             break
