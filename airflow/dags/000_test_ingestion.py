@@ -3,9 +3,10 @@ from datetime import datetime, timedelta
 from airflow.providers.google.cloud.operators.cloud_storage_transfer_service import (
     CloudDataTransferServiceCreateJobOperator
 )
+from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago
-
+from airflow.models.baseoperator import chain 
 
 
 DEFAULT_ARGS = {
@@ -38,21 +39,34 @@ with DAG(**dag_config) as dag:
     start = DummyOperator(task_id='start')
     end = DummyOperator(task_id='end')
     # Create the transfer job
-    create_transfer = CloudDataTransferServiceCreateJobOperator(
-        task_id='create_transfer_job',
-        project_id=GCP_PROJECT_ID,
-        body={
-            'description': 'Transfer data from public URL to GCS',
-            'status': 'ENABLED',
-            'projectId': GCP_PROJECT_ID,
-            'transferSpec': {
-                'httpDataSource': {
-                    'listUrl': METADATA_LINK,
-                },
-                'gcsDataSink': {
-                    'bucketName': DESTINATION_BUCKET,
-                    'path': DESTINATION_PATH_PREFIX,
-                }
-            },
-        }
+
+    transfer_task = BashOperator(
+        task_id='transfer_to_gcs',
+        bash_command='gsutil cp {public_url} gs://{bucket_name}/{object_name}',
+        env={
+            'public_url': METADATA_LINK,
+            'bucket_name': DESTINATION_BUCKET,
+            'object_name': 'data/metadata.json.gz',
+        },
+        dag=dag,
     )
+
+    chain(start, transfer_task, end)
+    # create_transfer = CloudDataTransferServiceCreateJobOperator(
+    #     task_id='create_transfer_job',
+    #     project_id=GCP_PROJECT_ID,
+    #     body={
+    #         'description': 'Transfer data from public URL to GCS',
+    #         'status': 'ENABLED',
+    #         'projectId': GCP_PROJECT_ID,
+    #         'transferSpec': {
+    #             'httpDataSource': {
+    #                 'listUrl': METADATA_LINK,
+    #             },
+    #             'gcsDataSink': {
+    #                 'bucketName': DESTINATION_BUCKET,
+    #                 'path': DESTINATION_PATH_PREFIX,
+    #             }
+    #         },
+    #     }
+    # )

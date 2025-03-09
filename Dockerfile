@@ -11,6 +11,7 @@ WORKDIR /opt/airflow
 USER root
 # Install mandatory packages
 
+
 RUN apt-get update \
        && apt-get install -y --no-install-recommends \
               vim \
@@ -21,7 +22,6 @@ RUN apt-get update \
        && rm -rf /var/lib/apt/lists/* \ 
        && apt-get install -y --no-install-recommends
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Copy entrypoint script to the container
 COPY entrypoint.sh /entrypoint.sh
@@ -32,9 +32,11 @@ USER airflow
 
 # Copy requirements.txt into the Docker container
 COPY requirements.txt /opt/airflow/requirements.txt
-
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 # Install needed Python packages
-RUN uv pip install --upgrade pip \
+RUN uv venv \
+ && source /opt/airflow/.venv/bin/activate \
+ && uv pip install --upgrade pip \
  && uv pip install --trusted-host pypi.python.org -r /opt/airflow/requirements.txt \
  && mkdir -p /tmp/downloads/data
 

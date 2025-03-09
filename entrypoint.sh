@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
+source .venv/bin/activate
 # Initialize the database
 airflow db migrate
 
