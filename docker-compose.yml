@@ -32,7 +32,7 @@ x-airflow-common: &airflow-common
     - ./dbt/profiles.yml:/home/airflow/.dbt
     - ./migrations:/opt/airflow/migrations
 
-# services:
+services:
 #   object_store_namenode:
 #     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
 #     container_name: namenode
@@ -89,10 +89,12 @@ x-airflow-common: &airflow-common
       retries: 5
       start_period: 5s
 
+
   airflow-webserver:
     <<: *airflow-common
     container_name: airflow-webserver
     environment:
+      <<: *airflow-environment
       AIRFLOW__CORE__EXECUTOR: "LocalExecutor"
       AIRFLOW__CORE__PARALLELISM: 8
       AIRFLOW__CORE__DAG_CONCURRENCY: 8
