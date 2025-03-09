@@ -1,7 +1,7 @@
 from airflow import DAG
 from datetime import datetime, timedelta
 from airflow.providers.google.cloud.operators.cloud_storage_transfer_service import (
-    CloudDataTransferServiceCreateJobOperator,
+    CloudDataTransferServiceCreateJobOperator
 )
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.utils.dates import days_ago

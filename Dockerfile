@@ -10,14 +10,18 @@ WORKDIR /opt/airflow
 # Switch to ROOT user for installing mandatory packages
 USER root
 # Install mandatory packages
+
 RUN apt-get update \
- && apt-get install -y --no-install-recommends \
-        vim \
- && apt-get autoremove -yqq --purge \
- && apt-get clean \
- && apt-get install -y libpq-dev gcc \
- && rm -rf /var/lib/apt/lists/* \ 
- && apt-get install -y --no-install-recommends
+       && apt-get install -y --no-install-recommends \
+              vim \
+       && apt-get install -y --no-install-recommends curl \
+       && apt-get autoremove -yqq --purge \
+       && apt-get clean \
+       && apt-get install -y libpq-dev gcc \
+       && rm -rf /var/lib/apt/lists/* \ 
+       && apt-get install -y --no-install-recommends
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Copy entrypoint script to the container
 COPY entrypoint.sh /entrypoint.sh
@@ -30,8 +34,8 @@ USER airflow
 COPY requirements.txt /opt/airflow/requirements.txt
 
 # Install needed Python packages
-RUN pip install --upgrade pip \
- && pip install --trusted-host pypi.python.org -r /opt/airflow/requirements.txt \
+RUN uv pip install --upgrade pip \
+ && uv pip install --trusted-host pypi.python.org -r /opt/airflow/requirements.txt \
  && mkdir -p /tmp/downloads/data
 
 # Copy your dags folder to the container
