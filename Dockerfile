@@ -9,7 +9,6 @@ WORKDIR /opt/airflow
 
 # Switch to ROOT user for installing mandatory packages
 USER root
-
 # Install mandatory packages
 RUN apt-get update \
  && apt-get install -y --no-install-recommends \
@@ -17,7 +16,8 @@ RUN apt-get update \
  && apt-get autoremove -yqq --purge \
  && apt-get clean \
  && apt-get install -y libpq-dev gcc \
- && rm -rf /var/lib/apt/lists/*
+ && rm -rf /var/lib/apt/lists/* \ 
+ && apt-get install -y --no-install-recommends
 
 # Copy entrypoint script to the container
 COPY entrypoint.sh /entrypoint.sh

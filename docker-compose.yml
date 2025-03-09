@@ -18,6 +18,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__CORE__LOAD_EXAMPLES: 'False'
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080
+    GOOGLE_APPLICATION_CREDENTIALS: '/home/airflow/application_default_credentials.json'
     HDFS_URI: 'http://namenode:9870'
     <<: *trg-env2
   env_file:
@@ -31,6 +32,7 @@ x-airflow-common: &airflow-common
     - ./dbt:/opt/airflow/dbt
     - ./dbt/profiles.yml:/home/airflow/.dbt
     - ./migrations:/opt/airflow/migrations
+    - .config/gcloud/application_default_credentials.json:/home/airflow/application_default_credentials.json
 
 services:
 #   object_store_namenode:
