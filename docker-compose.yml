@@ -93,7 +93,6 @@ x-airflow-common: &airflow-common
     <<: *airflow-common
     container_name: airflow-webserver
     environment:
-      <<: *airflow-environment
       AIRFLOW__CORE__EXECUTOR: "LocalExecutor"
       AIRFLOW__CORE__PARALLELISM: 8
       AIRFLOW__CORE__DAG_CONCURRENCY: 8
