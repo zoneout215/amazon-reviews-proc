@@ -19,7 +19,7 @@ x-airflow-common: &airflow-common
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres/airflow
     AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080
     GOOGLE_APPLICATION_CREDENTIALS: 'application_default_credentials.json'
-    AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: google-cloud-platform://?extra__google_cloud_platform__key_path=/home/airflow/application_default_credentials.json&extra__google_cloud_platform__project=e-analogy-449921-p7
+    AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: google-cloud-platform://?extra__google_cloud_platform__key_path=application_default_credentials.json&extra__google_cloud_platform__project=e-analogy-449921-p7
     HDFS_URI: 'http://namenode:9870'
     <<: *trg-env2
   env_file:
