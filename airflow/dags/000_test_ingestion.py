@@ -40,33 +40,33 @@ with DAG(**dag_config) as dag:
     end = DummyOperator(task_id='end')
     # Create the transfer job
 
-    transfer_task = BashOperator(
-        task_id='transfer_to_gcs',
-        bash_command='gsutil cp {public_url} gs://{bucket_name}/{object_name}',
-        env={
-            'public_url': METADATA_LINK,
-            'bucket_name': DESTINATION_BUCKET,
-            'object_name': 'data/metadata.json.gz',
-        },
-    )
+    # transfer_task = BashOperator(
+    #     task_id='transfer_to_gcs',
+    #     bash_command='gcloud transfer jobs create {public_url} gs://{bucket_name}/{object_name}',
+    #     env={
+    #         'public_url': METADATA_LINK,
+    #         'bucket_name': DESTINATION_BUCKET,
+    #         'object_name': 'data/metadata.json.gz',
+    #     },
+    # )
 
     
-    # create_transfer = CloudDataTransferServiceCreateJobOperator(
-    #     task_id='create_transfer_job',
-    #     project_id=GCP_PROJECT_ID,
-    #     body={
-    #         'description': 'Transfer data from public URL to GCS',
-    #         'status': 'ENABLED',
-    #         'projectId': GCP_PROJECT_ID,
-    #         'transferSpec': {
-    #             'httpDataSource': {
-    #                 'listUrl': METADATA_LINK,
-    #             },
-    #             'gcsDataSink': {
-    #                 'bucketName': DESTINATION_BUCKET,
-    #                 'path': DESTINATION_PATH_PREFIX,
-    #             }
-    #         },
-    #     }
-    # )
-    chain(start, transfer_task, end)
+    create_transfer = CloudDataTransferServiceCreateJobOperator(
+        task_id='create_transfer_job',
+        project_id=GCP_PROJECT_ID,
+        body={
+            'description': 'Transfer data from public URL to GCS',
+            'status': 'ENABLED',
+            'projectId': GCP_PROJECT_ID,
+            'transferSpec': {
+                'httpDataSource': {
+                    'listUrl': METADATA_LINK,
+                },
+                'gcsDataSink': {
+                    'bucketName': DESTINATION_BUCKET,
+                    'path': DESTINATION_PATH_PREFIX,
+                }
+            },
+        }
+    )
+    chain(start, create_transfer, end)
