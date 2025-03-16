@@ -15,5 +15,4 @@ hadoop/namenode/
 dbt/.user.yml
 hadoop/.DS_Store
 .DS_Store
-#TODO
-.gitignore
+OUTPUT_FILE
