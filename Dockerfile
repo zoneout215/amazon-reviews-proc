@@ -1,4 +1,5 @@
-FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.11
+# Use Apache Airflow as the base image
+FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.9
 
 # Set environment variables
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
