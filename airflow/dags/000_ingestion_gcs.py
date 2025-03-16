@@ -30,8 +30,8 @@ GCP_PROJECT_ID = 'e-analogy-449921-p7'
 URL_LIST = "gs://jet-assignment-211312/test/test.tsv" 
 METADATA_LINK ="https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz"
 RATINGS_LINK =  "https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz"
-DESTINATION_BUCKET = 'gs://jet-assignment-12312'
-DESTINATION_PATH_PREFIX = 'landing'  # Optional path prefix in the bucket
+DESTINATION_BUCKET = 'jet-assignment-12312'
+DESTINATION_PATH_PREFIX = 'landing/'  # Optional path prefix in the bucket
 
 SCHEDULE = {
         "scheduleStartDate":  parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
