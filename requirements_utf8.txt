@@ -1,9 +1,0 @@
-﻿requests==2.31.0
-pandas==2.0.3
-dbt-core==1.8.0
-dbt-postgres==1.8.0
-dbt-clickhouse==1.8.5
-sqllineage==1.3.8
-airflow-clickhouse-plugin==1.4.0
-clickhouse-connect>=0.6.22
-apache-airflow-providers-google
