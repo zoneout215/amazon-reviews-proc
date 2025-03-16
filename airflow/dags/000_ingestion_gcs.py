@@ -24,7 +24,7 @@ dag_config = {
     'schedule_interval': None,
     'max_active_runs': 1,
     'catchup': False,
-    'start_date': datetime.now(timezone.utc)
+    'start_date': datetime.now(timezone.utc).date()  
 }
 
 # Define your GCP project and bucket details
@@ -36,9 +36,9 @@ DESTINATION_BUCKET = 'gs://jet-assignment-12312'
 DESTINATION_PATH_PREFIX = 'landing'  # Optional path prefix in the bucket
 
 SCHEDULE = {
-        "SCHEDULE_START_DATE":  datetime.now(timezone.utc).date(),
-        "SCHEDULE_END_DATE": datetime.now(timezone.utc).date(),
-        "START_TIME_OF_DAY": (datetime.now(tz=timezone.utc) + timedelta(minutes=1)).time(),
+        "SCHEDULE_START_DATE":  datetime.now(timezone.utc).date().strftime("%Y-%m-%d"),
+        "SCHEDULE_END_DATE": datetime.now(timezone.utc).date().strftime("%Y-%m-%d"),
+        "START_TIME_OF_DAY": (datetime.now(tz=timezone.utc) + timedelta(minutes=1)).time().strftime("%H:%M:%S"),
     }
 
 with DAG(**dag_config) as dag:
