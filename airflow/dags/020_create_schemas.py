@@ -6,7 +6,6 @@ from airflow import DAG
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow_clickhouse_plugin.operators.clickhouse import ClickHouseOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
 
 
