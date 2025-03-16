@@ -5,9 +5,8 @@ from airflow.providers.google.cloud.operators.cloud_storage_transfer_service imp
 )
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.utils.dates import days_ago
 from airflow.models.baseoperator import chain 
-
+from plugins.ingest import parse_date, parse_time
 
 DEFAULT_ARGS = {
     'owner': 'sergei.romanov',
@@ -27,7 +26,6 @@ dag_config = {
     'start_date': datetime.now(timezone.utc)  
 }
 
-# Define your GCP project and bucket details
 GCP_PROJECT_ID = 'e-analogy-449921-p7'
 URL_LIST = "gs://jet-assignment-211312/test/test.tsv" 
 METADATA_LINK ="https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz"
@@ -36,9 +34,9 @@ DESTINATION_BUCKET = 'gs://jet-assignment-12312'
 DESTINATION_PATH_PREFIX = 'landing'  # Optional path prefix in the bucket
 
 SCHEDULE = {
-        "scheduleStartDate":  datetime.now(timezone.utc).date().strftime("%Y-%m-%d"),
-        "scheduleEndDate": datetime.now(timezone.utc).date().strftime("%Y-%m-%d"),
-        "startTimeOfDay": (datetime.now(tz=timezone.utc) + timedelta(minutes=1)).time().strftime("%H:%M:%S"),
+        "scheduleStartDate":  parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
+        "scheduleEndDate": parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
+        "startTimeOfDay": parse_time((datetime.now(tz=timezone.utc) + timedelta(minutes=1)).time().strftime("%H:%M:%S")),
     }
 
 with DAG(**dag_config) as dag:

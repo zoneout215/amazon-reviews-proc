@@ -3,7 +3,7 @@ import gzip
 import requests
 from os.path import join
 from hdfs import InsecureClient
-
+from datetime import datetime
 
 FILES_DIR_PATH = "/tmp/downloads/data"
 METADATA_LINK ="https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz"
@@ -83,3 +83,22 @@ def data_storage():
 
     store_in_hdfs(metadata_file_path, '/data/items/metadata')
     store_in_hdfs(ratings_file_path, '/data/items/item_dedup')
+
+
+def parse_date(date: str):
+    dt = datetime.strptime(date, '%Y-%m-%d')
+    return {
+        "year": dt.year,
+        "month": dt.month,
+        "day": dt.day
+    }
+
+def parse_time(time: str) -> dict:
+    # Parse the time string into a datetime object
+    dt = datetime.strptime(time, '%H:%M:%S')
+    return {
+        "hours": dt.hour,
+        "minutes": dt.minute,
+        "seconds": dt.second,
+        "nanos": 0  # Assuming nanoseconds are zero
+    }
