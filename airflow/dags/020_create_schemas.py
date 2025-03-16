@@ -7,16 +7,20 @@ from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy_operator import DummyOperator
 from airflow_clickhouse_plugin.operators.clickhouse import ClickHouseOperator
+from airflow.providers.google.cloud.operators.bigquery import BigQueryExecuteQueryOperator
+
 
 SCHEMAS_DIR = "/opt/airflow/migrations/"
-
 DEFAULT_ARGS = {
     'owner': 'sergei.romanov',
     'clickhouse_conn_id': 'clickhouse',
     'database': 'default',
     'depends_on_past': False,
     'email_on_failure': False,
-    'email_on_retry': False
+    'email_on_retry': False, 
+    'location': 'EU',
+    'project_id': 'e-analogy-449921-p7',
+    'use_legacy_sql': False
 }
 
 dag_config = {
@@ -37,26 +41,28 @@ def read_sql_file(folder_path: str, filename: str) -> List[str]:
             queries = [query.strip() for query in content.split(';') if query.strip()]
             return queries
 
+
+
 with DAG(**dag_config) as dag:
     start = DummyOperator(task_id='start')
     end = DummyOperator(task_id='end')
 
-    create_schema_raw_data = ClickHouseOperator(
+    create_schema_raw_data = BigQueryExecuteQueryOperator(
         task_id='create_schema_raw_data',
         sql=read_sql_file(SCHEMAS_DIR, "create_schema_raw_data.sql"),
     )
  
-    create_schema_staging = ClickHouseOperator(
+    create_schema_staging = BigQueryExecuteQueryOperator(
         task_id='create_schema_staging',
         sql=read_sql_file(SCHEMAS_DIR, "create_schema_staging.sql"),
     )
 
-    create_schema_core_dwh = ClickHouseOperator(
+    create_schema_core_dwh = BigQueryExecuteQueryOperator(
         task_id='create_schema_core_dwh',
         sql=read_sql_file(SCHEMAS_DIR, "create_schema_core_dwh.sql"),
     )
     
-    create_schema_dm_avg_reviews = ClickHouseOperator(
+    create_schema_dm_avg_reviews = BigQueryExecuteQueryOperator(
         task_id='create_schema_dm_avg_reviews',
         sql=read_sql_file(SCHEMAS_DIR, "create_schema_dm_avg_reviews.sql"),
     )

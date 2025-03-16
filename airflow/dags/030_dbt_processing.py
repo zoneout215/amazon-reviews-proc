@@ -34,11 +34,4 @@ with DAG(**dag_config) as dag:
         retries=1,
         retry_delay=timedelta(minutes=1)
     )
-
-    trigger_dq_checking = TriggerDagRunOperator(
-        task_id="trigger_dbt_processing",
-        trigger_dag_id="040_data_quality_checking",
-        wait_for_completion=False
-    )
-
-    start >> dbt_processing >> trigger_dq_checking >> end
+    start >> dbt_processing >> end
