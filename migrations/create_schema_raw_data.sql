@@ -1,14 +1,10 @@
-CREATE TABLE IF NOT EXISTS default.raw_data_metadata (
-    json_string     TEXT,
-    created_at      DATE
-)
-ENGINE MergeTree() 
-ORDER BY created_at;
+-- Converted to BigQuery DDL from ClickHouse
+CREATE OR REPLACE TABLE `amazon_reviews.raw_data_metadata` (
+    json_string STRING,
+    created_at DATE
+);
 
-
-CREATE TABLE IF NOT EXISTS default.raw_data_items (
-    json_string     TEXT,
-    created_at      DATE
-)
-ENGINE MergeTree() 
-ORDER BY created_at;
+CREATE OR REPLACE TABLE `amazon_reviews.raw_data_items` (
+    json_string STRING,
+    created_at DATE
+);

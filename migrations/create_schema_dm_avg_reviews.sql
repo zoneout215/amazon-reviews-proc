@@ -1,15 +1,12 @@
-CREATE TABLE IF NOT EXISTS default.dm_rating_top_bottom_five (
-    label      VARCHAR(128),
-    movie      VARCHAR(256),
-    year_month VARCHAR(8)
-)
-ENGINE MergeTree() 
-ORDER BY year_month;
+-- Converted to BigQuery DDL from ClickHouse
+CREATE OR REPLACE TABLE `amazon_reviews.dm_rating_top_bottom_five` (
+    label      STRING,
+    movie      STRING,
+    year_month STRING
+);
 
-CREATE TABLE IF NOT EXISTS default.dm_rating_top_five_increased_rating (
-    label      VARCHAR(128),
-    movie      VARCHAR(256),
-    year_month VARCHAR(8)
-)
-ENGINE MergeTree() 
-ORDER BY year_month;
+CREATE OR REPLACE TABLE `amazon_reviews.dm_rating_top_five_increased_rating` (
+    label      STRING,
+    movie      STRING,
+    year_month STRING
+);
