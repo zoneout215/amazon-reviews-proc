@@ -33,7 +33,7 @@ x-airflow-common: &airflow-common
     - ./dbt:/opt/airflow/dbt
     - ./dbt/profiles.yml:/home/airflow/.dbt
     - ./migrations:/opt/airflow/migrations
-    - ../.config/gcloud/application_default_credentials.json:/opt/airflow/application_default_credentials.json
+    - ./OUTPUT_FILE:/opt/airflow/application_default_credentials.json
 
 services:
 #   object_store_namenode:
