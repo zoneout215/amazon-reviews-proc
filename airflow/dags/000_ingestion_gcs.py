@@ -24,7 +24,7 @@ dag_config = {
     'schedule_interval': None,
     'max_active_runs': 1,
     'catchup': False,
-    'start_date': datetime.now(timezone.utc).date()  
+    'start_date': datetime.now(timezone.utc)  
 }
 
 # Define your GCP project and bucket details
