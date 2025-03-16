@@ -55,6 +55,7 @@ with DAG(**dag_config) as dag:
             'description': 'Transfer data from public URL to GCS',
             'status': 'ENABLED',
             'projectId': GCP_PROJECT_ID,
+            'schedule': SCHEDULE,
             'transferSpec': {
                 'httpDataSource': {
                     'listUrl': URL_LIST,

@@ -6,6 +6,7 @@ import pandas as pd
 import re
 from hdfs import InsecureClient
 from typing import List, Tuple, Generator
+from google.cloud import storage
 import clickhouse_connect
 
 HDFS_URI = os.getenv('HDFS_URI')
@@ -57,6 +58,36 @@ def read_and_parse_from_hdfs_in_batches(
                     buffer = [] # empyting buffer         
             if buffer:
                 yield buffer
+
+
+
+def read_and_parse_from_gcs_in_batches(
+    gcs_bucket_name: str,
+    gcs_blob_name: str,
+    batch_size=BATCH_SIZE,
+    is_metadata=False
+) -> Generator[List[Tuple[str]], None, None]:
+    """
+    Reads compressed JSON data from Google Cloud Storage in batches.
+    Uses list as buffer, and yields when buffer is full.
+    """
+    storage_client = storage.Client()
+    bucket = storage_client.bucket(gcs_bucket_name)
+    blob = bucket.blob(gcs_blob_name)
+
+    with blob.download_to_filename('/tmp/data.gz') as tmp_file:
+        with gzip.GzipFile(fileobj=tmp_file) as content:
+            buffer = []
+            for line in content:
+                record = parse_json_line(line, is_metadata)
+                if record:
+                    buffer.append(record)
+                if len(buffer) >= batch_size:
+                    yield buffer
+                    buffer = []  # emptying buffer
+            if buffer:
+                yield buffer
+
 
 def parse_json_line(line: bytes, is_metadata=False) -> Tuple[str, datetime.datetime]:
     """Parses a line of text containing JSON."""
