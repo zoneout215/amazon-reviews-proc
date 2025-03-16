@@ -1,7 +1,6 @@
-# Use Apache Airflow as the base image
-FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.9
+FROM --platform=linux/amd64 apache/airflow:2.7.3-python3.11
 
-# Set environment varialbes
+# Set environment variables
 ENV AIRFLOW__CORE__LOAD_EXAMPLES=False
 
 # Set the working directory for convenience
@@ -9,8 +8,8 @@ WORKDIR /opt/airflow
 
 # Switch to ROOT user for installing mandatory packages
 USER root
-# Install mandatory packages
 
+# # Install mandatory packages
 RUN apt-get update \
        && apt-get install -y --no-install-recommends \
               vim \
