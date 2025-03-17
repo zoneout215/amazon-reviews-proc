@@ -90,7 +90,7 @@ def read_and_parse_from_gcs_in_batches(
                 yield buffer
 
 
-def parse_json_line(line: bytes, is_metadata=False) -> __dict__[str, str]:
+def parse_json_line(line: bytes, is_metadata=False) -> dict[str, str]:
     """Parses a line of text containing JSON."""
     try:
         line_str = line.decode('utf-8')
