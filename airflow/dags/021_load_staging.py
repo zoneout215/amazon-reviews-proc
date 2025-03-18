@@ -1,6 +1,5 @@
 from plugins.parse_and_store import process_metadata, process_items
 from datetime import datetime, timedelta
-
 from airflow import DAG
 from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.operators.dummy_operator import DummyOperator
@@ -13,7 +12,6 @@ DEFAULT_ARGS = {
     'email_on_failure': False,
     'email_on_retry': False
 }
-
 
 dag_config = {
     'dag_id': '021_load_staging',

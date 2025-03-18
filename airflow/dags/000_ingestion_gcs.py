@@ -8,6 +8,13 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.models.baseoperator import chain 
 from plugins.ingest import parse_date, parse_time
 
+GCP_PROJECT_ID = 'e-analogy-449921-p7'
+URL_LIST = "gs://jet-assignment-211312/test/test.tsv" 
+METADATA_LINK ="https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz"
+RATINGS_LINK =  "https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz"
+BUCKET_NAME = 'jet-assignment-12312'
+DESTINATION_PATH_PREFIX = 'landing/'  # Optional path prefix in the bucket
+
 DEFAULT_ARGS = {
     'owner': 'sergei.romanov',
     'clickhouse_conn_id': 'clickhouse',
@@ -26,13 +33,6 @@ dag_config = {
     'start_date': datetime.now(timezone.utc)  
 }
 
-GCP_PROJECT_ID = 'e-analogy-449921-p7'
-URL_LIST = "gs://jet-assignment-211312/test/test.tsv" 
-METADATA_LINK ="https://snap.stanford.edu/data/amazon/productGraph/metadata.json.gz"
-RATINGS_LINK =  "https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz"
-DESTINATION_BUCKET = 'jet-assignment-12312'
-DESTINATION_PATH_PREFIX = 'landing/'  # Optional path prefix in the bucket
-
 SCHEDULE = {
         "scheduleStartDate":  parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
         "scheduleEndDate": parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
@@ -41,8 +41,7 @@ SCHEDULE = {
 
 with DAG(**dag_config) as dag:
     start = DummyOperator(task_id='start')
-    end = DummyOperator(task_id='end')
-    # Create the transfer job    
+    end = DummyOperator(task_id='end')   
     create_transfer = CloudDataTransferServiceCreateJobOperator(
         task_id='create_transfer_job',
         project_id=GCP_PROJECT_ID,
@@ -56,7 +55,7 @@ with DAG(**dag_config) as dag:
                     'listUrl': URL_LIST,
                 },
                 'gcsDataSink': {
-                    'bucketName': DESTINATION_BUCKET,
+                    'bucketName': BUCKET_NAME,
                     'path': DESTINATION_PATH_PREFIX,
                 }
             },
