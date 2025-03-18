@@ -1,12 +1,4 @@
 version: '3.8'
-
-x-trg-env2: &trg-env2
-  CLICKHOUSE_HOST: "clickhouse-server"
-  CLICKHOUSE_DB: default
-  CLICKHOUSE_USER: default
-  CLICKHOUSE_PASSWORD: ''
-  CLICKHOUSE_PORT: 8123 
-
 x-airflow-common: &airflow-common
   build:
     context: .
@@ -20,8 +12,6 @@ x-airflow-common: &airflow-common
     AIRFLOW__WEBSERVER__BASE_URL: http://localhost:8080
     GOOGLE_APPLICATION_CREDENTIALS: 'application_default_credentials.json'
     AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: google-cloud-platform://?extra__google_cloud_platform__key_path=application_default_credentials.json&extra__google_cloud_platform__project=e-analogy-449921-p7
-    HDFS_URI: 'http://namenode:9870'
-    <<: *trg-env2
   env_file:
     - local.env
   restart: always
@@ -30,54 +20,13 @@ x-airflow-common: &airflow-common
     - ./airflow/plugins:/opt/airflow/plugins
     - ./airflow/logs:/opt/airflow/logs
     - ./airflow/source_data:/opt/airflow/source_data
+    - ./data_sources.tsv:/opt/airflow/data_sources.tsv
     - ./dbt:/opt/airflow/dbt
     - ./dbt/profiles.yml:/home/airflow/.dbt
     - ./migrations:/opt/airflow/migrations
     - ./OUTPUT_FILE:/opt/airflow/application_default_credentials.json
 
 services:
-#   object_store_namenode:
-#     image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
-#     container_name: namenode
-#     restart: always
-#     ports:
-#       - "9870:9870"
-#       - "9001:9000"
-#     expose:
-#       - "9001"
-#     volumes:
-#       - ./hadoop/namenode:/hadoop/dfs/name
-#     environment:
-#       CLUSTER_NAME: 'test'
-#     env_file:
-#       - ./hadoop/hadoop.env
-
-#   object_store_datanode_1:
-#     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-#     container_name: datanode1
-#     restart: always
-#     ports:
-#       - "9864:9864"
-#     volumes:
-#       - ./hadoop/datanode1:/hadoop/dfs/data
-#     environment:
-#       SERVICE_PRECONDITION: 'namenode:9870'
-#     env_file:
-#       - ./hadoop/hadoop.env
-
-#   object_store_datanode_2:
-#     image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
-#     container_name: datanode2
-#     restart: always
-#     ports:
-#       - "9865:9864"
-#     volumes:
-#       - ./hadoop/datanode2:/hadoop/dfs/data
-#     environment:
-#       SERVICE_PRECONDITION: 'namenode:9870'
-#     env_file:
-#       - ./hadoop/hadoop.env
-
   postgres:
     image: postgres:13
     container_name: postgres
@@ -127,29 +76,3 @@ services:
     depends_on:
       - airflow-webserver
     command: scheduler
-
-  # clickhouse-server:
-  #   image: clickhouse/clickhouse-server:24.10.4
-  #   container_name: clickhouse-server
-  #   hostname: clickhouse-server
-  #   ports:
-  #     - "8123:8123" # HTTP port
-  #     - "9000:9000" # Native TCP port
-  #   expose:
-  #     - "9000"
-  #   environment: 
-  #     <<: *trg-env2
-  #   #   CLICKHOUSE_DB: default
-  #   #   CLICKHOUSE_USER: clickhouse
-  #   #   CLICKHOUSE_PASSWORD: ''
-  #   #   CLICKHOUSE_PORT: 9000 
-  #   #   CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT: 1
-    
-  #   volumes:
-  #     - ./clickhouse/clickhouse_data:/var/lib/clickhouse # Persist data
-  #   ulimits:
-  #     nofile: 262144
-  #   deploy: 
-  #     resources:
-  #       reservations:
-  #         cpus: '4.0'

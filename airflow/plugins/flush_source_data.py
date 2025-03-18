@@ -1,5 +1,4 @@
 import os
-# from hdfs import InsecureClient
 from typing import List, Tuple, Generator
 
 HDFS_URI = os.getenv('HDFS_URI')
