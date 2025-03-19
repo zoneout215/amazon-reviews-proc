@@ -75,14 +75,12 @@ with DAG(**dag_config) as dag:
     sensor_task_metadata = GCSObjectExistenceSensor(
         task_id='sensor_task_metadata',
         bucket=BUCKET_NAME,
-        object=f'{BUCKET_NAME}/landing/snap.stanford.edu/data/amazon/productGraph/metadata.json.gz',
-        deferrable=True,  # Optional: Run in deferrable mode to free up worker slots
+        object='landing/snap.stanford.edu/data/amazon/productGraph/metadata.json.gz',
     )
 
     sensor_task_items = GCSObjectExistenceSensor(
         task_id='sensor_task_items',
         bucket=BUCKET_NAME,
-        object=f'{BUCKET_NAME}/landing/snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz',
-        deferrable=True,  # Optional: Run in deferrable mode to free up worker slots
+        object='landing/snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz',
     )
     chain(start,upload_task, create_transfer, [sensor_task_metadata, sensor_task_items], end)
