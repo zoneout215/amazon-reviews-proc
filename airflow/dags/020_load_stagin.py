@@ -62,16 +62,3 @@ with DAG(**dag_config) as dag:
     )
 
     chain(start, [load_json_to_bigquery, load_metadata], end)
-
-# load_metadata = GCSToBigQueryOperator(
-#     task_id='load_metadata',
-#     bucket='jet-assignment-12312',
-#     source_objects=['decompressed/metadata.json'],
-#     destination_project_dataset_table='e-analogy-449921-p7.amazon_reviews.raw_data_metadata',
-#     source_format='CSV',
-#     field_delimiter='\\u00FE', ## '\u00FE' is a really rare delimiter, so to read every line as a single column
-#     write_disposition='WRITE_TRUNCATE',
-#     schema_fields=[{'name': 'json_string', 'type': 'STRING'}],
-#     skip_leading_rows=0,
-#     gcp_conn_id='your_gcp_connection_id'
-# )

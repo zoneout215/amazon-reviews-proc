@@ -9,9 +9,7 @@ This pipeline performs ETL operations for category-based review analysis, focusi
 
 # Table of Contents
 - `airflow/` - Airflow DAGs and plugins
-- `clickhouse/` - ClickHouse configuration and initialization scripts
 - `dbt/` - dbt models and configurations
-- `hadoop/` - Hadoop configuration and initialization scripts
 - `docker-compose.yml` - Docker Compose configuration
 - `README.md` - Project overview and startup manual
 - `er-diagrams/` - Entity Relationship Diagrams text and images
@@ -20,15 +18,14 @@ This pipeline performs ETL operations for category-based review analysis, focusi
 - `output.csv` - Output data mart of the top five rated categories per month with most reviewed products 
 
 # Project Overview
-
 This project is a multi-service data processing platform orchestrated with Docker Compose. It integrates:
 - Apache Airflow for workflow orchestration
 - PostgreSQL as the relational database for Airflow metadata
-- ClickHouse for analytical processing 
+- BigQuery for analytical processing 
+- Goolge Cloud Storage  for object storage
+- DataFlow for decompression of the source data
 - dbt for data modeling and transformation
-- Hadoop (NameNode and DataNodes) for object storage
 - Docker compose for service management
- apache/airflow:2.7.3
 
 ## 0\. Software used 
 | Software                      | Name and version                                       |
@@ -48,19 +45,36 @@ This project is a multi-service data processing platform orchestrated with Docke
 ## 1\. Startup Manual
 
 1. Ensure Docker and Docker Compose are installed.
-2. Clone this repository.
-3. Navigate to the project root.
-4. For the local test you can limit the number of batches to be processed by changing the `NUMBER_STAG_BATCHES` variable in the `local.env` file.
+2. Install Google Cloud SDK
+   Follow the instructions to install the Google Cloud SDK: https://cloud.google.com/sdk/docs/install
+
+3. Enable Required APIs
+   Enable the necessary Google Cloud APIs:
+   ```sh
+   gcloud services enable dataflow.googleapis.com
+   gcloud services enable bigquery.googleapis.com
+   gcloud services enable storage.googleapis.com
+   ```
+4. Clone this repository.
+5. For the local test you can limit the number of batches to be processed by changing the `NUMBER_STAG_BATCHES` variable in the `local.env` file.
    ```yaml
     NUMBER_STAG_BATCHES=1
+    BUCKET_NAME=<your-bucket-name>
+    PROJECT_ID=<your-project-id>
+    SERVICE_ACCOUNT=<your-service-account>@<your-project>.iam.gserviceaccount.com
    ```
-5. Build and start all services:
+6. Create Service Account Key
+   Create a service account key for authentication:
+   ```sh
+   gcloud iam service-accounts keys create OUTPUT_FILE --iam-account <your-service-account>@<your-project>.iam.gserviceaccount.com
+   ```
+
+7. Build and start all services:
    ```bash
    docker-compose up -d --build
    ```
 
-6. Access the Airflow webserver at [Airflow](http://localhost:8080).
-7. Browse Hadoop storage at [Hadoop](http://localhost:9870/explorer.html#/).
+
 8. Monitor containers and logs as needed.
 
 ## 2. Airflow Pipeline Steps
@@ -95,4 +109,13 @@ The Airflow pipelines are defined by DAG files in the `/airflow/dags` folder. Ea
 - Add data quality check frameworks like Great expectations for data profiling and analysis.
 
 
-**prepared by Sergei Romanov**
+
+#TODO: 
+- Test run with time estimation
+- Adjust schemas 
+- Adjust data transformations
+- Presentation
+- Adjust production settings
+- Adjust README.md
+- Reflect on learing points 
+**prepared by Sergei Romanov** 
