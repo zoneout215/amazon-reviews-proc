@@ -54,4 +54,7 @@ FROM
 INNER JOIN {{ ref('dim_category') }} AS c
 ON t.category_id = c.category_id
 WHERE
-    t.category_rank <= 5
+    t.category_rank <= 5 AND t.year_month IS NOT NULL
+ORDER BY
+    t.year_month,
+    t.category_rank

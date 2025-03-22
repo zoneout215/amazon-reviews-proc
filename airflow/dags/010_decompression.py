@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from airflow import DAG
 import os
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.models.baseoperator import chain 
 from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator
@@ -42,6 +43,7 @@ with DAG(**dag_config) as dag:
             'outputDirectory': os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
             'outputFailureFile': os.path.join(BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"),
         },
+        asynchronous=True,
     )
     decopress_items = DataflowTemplatedJobStartOperator(
         task_id='decopress_items',
@@ -51,17 +53,26 @@ with DAG(**dag_config) as dag:
             'outputDirectory': os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
             'outputFailureFile': os.path.join(BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"),
         },
+        options={'numWorkers': '10'},
+        asynchronous=True,
     )
 
     sensor_task_metadata = GCSObjectExistenceSensor(
         task_id='sensor_task_metadata',
         bucket=BUCKET_NAME,
-        object= os.path.join(DIR_DECOMPRESSED, "metadata.json.gz"),
+        object= os.path.join(DIR_DECOMPRESSED, "metadata.json"),
     )
 
     sensor_task_items = GCSObjectExistenceSensor(
         task_id='sensor_task_items',
         bucket=BUCKET_NAME,
-        object= os.path.join(DIR_DECOMPRESSED, "item_dedup.json.gz"),
+        object= os.path.join(DIR_DECOMPRESSED, "item_dedup.json"),
     )
-    chain(start, [decopress_metadata, decopress_items],[sensor_task_metadata, sensor_task_items], end)
+
+    trigger_next = TriggerDagRunOperator(
+        task_id="trigger_load_staging",
+        trigger_dag_id="020_load_staging",
+        wait_for_completion=False
+    )
+
+    chain(start, [decopress_metadata, decopress_items],[sensor_task_metadata, sensor_task_items], trigger_next, end)

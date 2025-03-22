@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone, date
 from airflow.providers.google.cloud.operators.cloud_storage_transfer_service import (
     CloudDataTransferServiceCreateJobOperator
 )
+from airflow.operators.dagrun_operator import TriggerDagRunOperator
 from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 from airflow.operators.dummy_operator import DummyOperator
@@ -83,4 +84,11 @@ with DAG(**dag_config) as dag:
         bucket=BUCKET_NAME,
         object='landing/snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz',
     )
-    chain(start,upload_task, create_transfer, [sensor_task_metadata, sensor_task_items], end)
+
+    trigger_next = TriggerDagRunOperator(
+        task_id="trigger_decompression",
+        trigger_dag_id="010_decompression",
+        wait_for_completion=False
+    )
+
+    chain(start,upload_task, create_transfer, [sensor_task_metadata, sensor_task_items], trigger_next, end)
