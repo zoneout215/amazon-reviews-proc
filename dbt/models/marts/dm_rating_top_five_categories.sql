@@ -1,10 +1,7 @@
 {{
     config(
         materialized='table',
-        alias='dm_rating_top_five_cat_rating',
-        pre_hook=[
-            "TRUNCATE TABLE {{ this }}"
-        ]
+        schema='amazon_reviews_dbt'
     )
 }}
 
@@ -16,9 +13,9 @@ WITH reviews_per_product AS (
             '.',
             EXTRACT(MONTH FROM r.event_timestamp)) AS year_month,
         AVG(r.rating) AS avg_rating,
-        Count(DISTINCT(r.review_id)) AS num_ratings
+        COUNT(DISTINCT r.review_id) AS num_ratings
     FROM
-        {{ ref('fact_rating') }} AS r
+        {{ ref('fact_reviews') }} AS r
     GROUP BY
         r.item,
         CONCAT(
@@ -34,7 +31,7 @@ ranked_categories AS (
         AVG(rp.avg_rating) AS avg_category_rating,
         ROW_NUMBER() OVER (
             PARTITION BY rp.year_month
-            ORDER BY  AVG(rp.avg_rating) DESC, SUM(rp.num_ratings) DESC
+            ORDER BY AVG(rp.avg_rating) DESC, SUM(rp.num_ratings) DESC
         ) AS category_rank
     FROM
         reviews_per_product rp
@@ -53,7 +50,7 @@ SELECT
         t.category_rank
     ) AS label
 FROM
-    ranked_categories as t
+    ranked_categories AS t
 INNER JOIN {{ ref('dim_category') }} AS c
 ON t.category_id = c.category_id
 WHERE

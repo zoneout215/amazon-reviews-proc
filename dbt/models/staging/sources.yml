@@ -1,7 +1,8 @@
 version: 2
 
 sources:
-  - name: default
+  - name: amazon_reviews_dbt
+    database: e-analogy-449921-p7
     tables:
-      - name: staging_metadata
-      - name: staging_items
+      - name: gcs_raw_items
+      - name: gcs_raw_metadata
