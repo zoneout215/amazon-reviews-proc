@@ -1,10 +1,9 @@
 import os
-from typing import List, Tuple, Generator
 
-HDFS_URI = os.getenv('HDFS_URI')
+HDFS_URI = os.getenv("HDFS_URI")
 # HDFS_CLIENT = InsecureClient(HDFS_URI, user='hdfs')
-HDFS_METADATA_PATH = '/data/items/metadata/metadata.json.gz'
-HDFS_ITEMS_PATH = '/data/items/item_dedup/item_dedup.json.gz' 
+HDFS_METADATA_PATH = "/data/items/metadata/metadata.json.gz"
+HDFS_ITEMS_PATH = "/data/items/item_dedup/item_dedup.json.gz"
 FILES_DIR_PATH = "/opt/airflow/source_data"
 
 

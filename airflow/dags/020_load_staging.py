@@ -86,6 +86,4 @@ with DAG(**dag_config) as dag:
         wait_for_completion=False,
     )
 
-    chain(
-        start, create_dataset, [load_json_to_bigquery, load_metadata], trigger_next, end
-    )
+    chain(start, create_dataset, [load_json_to_bigquery, load_metadata], trigger_next, end)

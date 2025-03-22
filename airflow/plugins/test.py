@@ -1,6 +1,8 @@
-import requests
 import gzip
 import json
+
+import requests
+
 
 def download_json_chunks(url: str, file_path_prefix: str, records_per_chunk: int):
     """
@@ -44,6 +46,7 @@ def download_json_chunks(url: str, file_path_prefix: str, records_per_chunk: int
         print(f"Error downloading {url}: {e}")
         raise
 
+
 def write_json_chunk_to_file(chunk_data: list, chunk_file_path: str):
     """
     Writes a list of JSON records to a file.
@@ -53,11 +56,12 @@ def write_json_chunk_to_file(chunk_data: list, chunk_file_path: str):
         chunk_file_path (str): The path to the file where the chunk will be saved.
     """
     try:
-        with open(chunk_file_path, 'w') as f:
+        with open(chunk_file_path, "w") as f:
             json.dump(chunk_data, f)
     except OSError as e:
         print(f"Error writing chunk to {chunk_file_path}: {e}")
         raise
+
 
 def main():
     url = "https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz"
@@ -65,6 +69,7 @@ def main():
     records_per_chunk = 1000  # Adjust this value as needed
 
     download_json_chunks(url, file_path_prefix, records_per_chunk)
+
 
 if __name__ == "__main__":
     main()

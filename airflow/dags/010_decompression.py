@@ -42,9 +42,7 @@ with DAG(**dag_config) as dag:
         task_id="decopress_metadata",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
         parameters={
-            "inputFilePattern": os.path.join(
-                BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"
-            ),
+            "inputFilePattern": os.path.join(BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"),
             "outputDirectory": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
             "outputFailureFile": os.path.join(
                 BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"
@@ -56,13 +54,9 @@ with DAG(**dag_config) as dag:
         task_id="decopress_items",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
         parameters={
-            "inputFilePattern": os.path.join(
-                BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"
-            ),
+            "inputFilePattern": os.path.join(BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"),
             "outputDirectory": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
-            "outputFailureFile": os.path.join(
-                BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"
-            ),
+            "outputFailureFile": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"),
         },
         options={"numWorkers": "10"},
         asynchronous=True,

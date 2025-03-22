@@ -4,5 +4,6 @@ repos:
     rev: v0.3.4
     hooks:
     -   id: ruff
-        args: [ --fix ]
-    -   id: ruff
+        args: [--fix, --line-length=100]
+    -   id: ruff-format
+        args: [--line-length=100]

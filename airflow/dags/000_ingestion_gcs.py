@@ -15,22 +15,16 @@ from airflow.providers.google.cloud.transfers.local_to_gcs import (
 )
 
 GCP_PROJECT_ID = "e-analogy-449921-p7"
-URL_LIST = "gs://bucket_amazon_reviews/landing/data_sources.tsv"
 BUCKET_NAME = "bucket_amazon_reviews"
+URL_LIST = f"gs://{BUCKET_NAME}/landing/data_sources.tsv"
 DESTINATION_PATH_PREFIX = "landing/"
 SOURCES_LINKS_DIR = "/opt/airflow/data_sources.tsv"
 
 SCHEDULE = {
-    "scheduleStartDate": parse_date(
-        datetime.now(timezone.utc).date().strftime("%Y-%m-%d")
-    ),
-    "scheduleEndDate": parse_date(
-        datetime.now(timezone.utc).date().strftime("%Y-%m-%d")
-    ),
+    "scheduleStartDate": parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
+    "scheduleEndDate": parse_date(datetime.now(timezone.utc).date().strftime("%Y-%m-%d")),
     "startTimeOfDay": parse_time(
-        (datetime.now(tz=timezone.utc) + timedelta(minutes=1))
-        .time()
-        .strftime("%H:%M:%S")
+        (datetime.now(tz=timezone.utc) + timedelta(minutes=1)).time().strftime("%H:%M:%S")
     ),
 }
 
