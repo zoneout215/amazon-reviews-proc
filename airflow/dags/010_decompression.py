@@ -14,6 +14,7 @@ GCP_PROJECT_ID = "e-analogy-449921-p7"
 BUCKET_NAME = "bucket_amazon_reviews"
 DIR_COMPRESSED = "landing/snap.stanford.edu/data/amazon/productGraph/"
 DIR_DECOMPRESSED = "landing/decompressed/"
+
 DEFAULT_ARGS = {
     "owner": "airflow",
     "depends_on_past": False,

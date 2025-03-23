@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-from plugins.ingest import parse_date, parse_time
+from plugins.utils import parse_date, parse_time
 
 from airflow import DAG
 from airflow.models.baseoperator import chain
@@ -17,7 +17,6 @@ from airflow.providers.google.cloud.transfers.local_to_gcs import (
 
 GCP_PROJECT_ID = "e-analogy-449921-p7"
 BUCKET_NAME = "bucket_amazon_reviews"
-URL_LIST = f"gs://{BUCKET_NAME}/landing/data_sources.tsv"
 DESTINATION_PATH_PREFIX = "landing/"
 SOURCES_LINKS_DIR = "/opt/airflow/data_sources.tsv"
 
@@ -36,7 +35,7 @@ TRANSFER_BODY = {
     "schedule": SCHEDULE,
     "transferSpec": {
         "httpDataSource": {
-            "listUrl": URL_LIST,
+            "listUrl": f"gs://{BUCKET_NAME}/landing/data_sources.tsv",
         },
         "gcsDataSink": {
             "bucketName": BUCKET_NAME,
