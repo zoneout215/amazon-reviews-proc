@@ -80,12 +80,16 @@ with DAG(**dag_config) as dag:
         task_id="sensor_task_metadata",
         bucket=BUCKET_NAME,
         object="landing/snap.stanford.edu/data/amazon/productGraph/metadata.json.gz",
+        deferrable=True,
+        poke_interval=300,
     )
 
     sensor_task_items = GCSObjectExistenceSensor(
         task_id="sensor_task_items",
         bucket=BUCKET_NAME,
         object="landing/snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz",
+        deferrable=True,
+        poke_interval=300,
     )
 
     trigger_next = TriggerDagRunOperator(

@@ -11,7 +11,7 @@ from airflow.providers.google.cloud.operators.dataflow import (
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 
 GCP_PROJECT_ID = "e-analogy-449921-p7"
-BUCKET_NAME = "gs://bucket_amazon_reviews"
+BUCKET_NAME = "bucket_amazon_reviews"
 DIR_COMPRESSED = "landing/snap.stanford.edu/data/amazon/productGraph/"
 DIR_DECOMPRESSED = "landing/decompressed/"
 DEFAULT_ARGS = {
@@ -42,24 +42,33 @@ with DAG(**dag_config) as dag:
         task_id="decopress_metadata",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
         parameters={
-            "inputFilePattern": os.path.join(BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"),
-            "outputDirectory": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
+            "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
+            "inputFilePattern": os.path.join(
+                "gs://", BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"
+            ),
             "outputFailureFile": os.path.join(
-                BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"
+                "gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"
             ),
         },
-        asynchronous=True,
+        options={
+            "workerMachineType": "n1-highmem-16",
+        },
     )
     decopress_items = DataflowTemplatedJobStartOperator(
         task_id="decopress_items",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
         parameters={
-            "inputFilePattern": os.path.join(BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"),
-            "outputDirectory": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED),
-            "outputFailureFile": os.path.join(BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"),
+            "inputFilePattern": os.path.join(
+                "gs://", BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"
+            ),
+            "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
+            "outputFailureFile": os.path.join(
+                "gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"
+            ),
         },
-        options={"numWorkers": "10"},
-        asynchronous=True,
+        options={
+            "workerMachineType": "n1-highmem-16",
+        },
     )
 
     sensor_task_metadata = GCSObjectExistenceSensor(
@@ -82,7 +91,8 @@ with DAG(**dag_config) as dag:
 
     chain(
         start,
-        [decopress_metadata, decopress_items],
+        decopress_metadata,
+        decopress_items,
         [sensor_task_metadata, sensor_task_items],
         trigger_next,
         end,
