@@ -9,6 +9,7 @@ from airflow.operators.dummy_operator import DummyOperator
 from airflow.providers.google.cloud.operators.cloud_storage_transfer_service import (
     CloudDataTransferServiceCreateJobOperator,
 )
+from airflow.providers.google.cloud.operators.gcs import GCSCreateBucketOperator
 from airflow.providers.google.cloud.sensors.gcs import GCSObjectExistenceSensor
 from airflow.providers.google.cloud.transfers.local_to_gcs import (
     LocalFilesystemToGCSOperator,
@@ -65,6 +66,14 @@ with DAG(**dag_config) as dag:
     start = DummyOperator(task_id="start")
     end = DummyOperator(task_id="end")
 
+    create_bucket = GCSCreateBucketOperator(
+        task_id="create_bucket",
+        bucket_name=BUCKET_NAME,
+        storage_class="STANDARD",
+        location="EU",
+        exists_ok=True,
+    )
+
     upload_task = LocalFilesystemToGCSOperator(
         task_id="upload_file",
         src=SOURCES_LINKS_DIR,
@@ -100,6 +109,7 @@ with DAG(**dag_config) as dag:
 
     chain(
         start,
+        create_bucket,
         upload_task,
         create_transfer,
         [sensor_task_metadata, sensor_task_items],
