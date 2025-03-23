@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-
+from airflow.models.baseoperator import chain
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
@@ -31,4 +31,4 @@ with DAG(**dag_config) as dag:
         retries=1,
         retry_delay=timedelta(minutes=1),
     )
-    start >> dbt_processing >> end
+    chain(start, dbt_processing, end)

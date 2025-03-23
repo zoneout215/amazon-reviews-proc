@@ -34,6 +34,21 @@ dag_config = {
     "start_date": datetime.now(timezone.utc),
 }
 
+METADATA_DATAFLOW_PARAMS = {
+    "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
+    "inputFilePattern": os.path.join("gs://", BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"),
+    "outputFailureFile": os.path.join(
+        "gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"
+    ),
+}
+
+ITEMS_DATAFLOW_PARAMS = {
+    "inputFilePattern": os.path.join("gs://", BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"),
+    "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
+    "outputFailureFile": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"),
+}
+
+
 with DAG(**dag_config) as dag:
     start = DummyOperator(task_id="start")
     end = DummyOperator(task_id="end")
@@ -41,15 +56,7 @@ with DAG(**dag_config) as dag:
     decopress_metadata = DataflowTemplatedJobStartOperator(
         task_id="decopress_metadata",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
-        parameters={
-            "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
-            "inputFilePattern": os.path.join(
-                "gs://", BUCKET_NAME, DIR_COMPRESSED, "metadata.json.gz"
-            ),
-            "outputFailureFile": os.path.join(
-                "gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_metadata.txt"
-            ),
-        },
+        parameters=METADATA_DATAFLOW_PARAMS,
         options={
             "workerMachineType": "n1-highmem-16",
         },
@@ -57,15 +64,7 @@ with DAG(**dag_config) as dag:
     decopress_items = DataflowTemplatedJobStartOperator(
         task_id="decopress_items",
         template="gs://dataflow-templates/latest/Bulk_Decompress_GCS_Files",
-        parameters={
-            "inputFilePattern": os.path.join(
-                "gs://", BUCKET_NAME, DIR_COMPRESSED, "item_dedup.json.gz"
-            ),
-            "outputDirectory": os.path.join("gs://", BUCKET_NAME, DIR_DECOMPRESSED),
-            "outputFailureFile": os.path.join(
-                "gs://", BUCKET_NAME, DIR_DECOMPRESSED, "failures_items.txt"
-            ),
-        },
+        parameters=ITEMS_DATAFLOW_PARAMS,
         options={
             "workerMachineType": "n1-highmem-16",
         },
