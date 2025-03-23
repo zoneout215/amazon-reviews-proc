@@ -4,9 +4,10 @@ from airflow.operators.dummy import DummyOperator
 from airflow.operators.python import PythonOperator
 from airflow.models.baseoperator import chain
 from plugins.utils import download_from_gcs
+import os
 
-GCP_PROJECT_ID = "e-analogy-449921-p7"
-BUCKET_NAME = "bucket_amazon_reviews"
+GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 DIR_DECOMPRESSED = "landing/decompressed/"
 
 DEFAULT_ARGS = {

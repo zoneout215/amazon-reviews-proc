@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-
+import os
 from plugins.utils import parse_date, parse_time
 
 from airflow import DAG
@@ -15,8 +15,8 @@ from airflow.providers.google.cloud.transfers.local_to_gcs import (
     LocalFilesystemToGCSOperator,
 )
 
-GCP_PROJECT_ID = "e-analogy-449921-p7"
-BUCKET_NAME = "bucket_amazon_reviews"
+GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 DESTINATION_PATH_PREFIX = "landing/"
 SOURCES_LINKS_DIR = "/opt/airflow/data_sources.tsv"
 

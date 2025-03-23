@@ -13,8 +13,8 @@ from airflow.providers.google.cloud.transfers.gcs_to_bigquery import (
     GCSToBigQueryOperator,
 )
 
-GCP_PROJECT_ID = "e-analogy-449921-p7"
-BUCKET_NAME = "bucket_amazon_reviews"
+GCP_PROJECT_ID = os.getenv("GCP_PROJECT_ID")
+BUCKET_NAME = os.getenv("BUCKET_NAME")
 DATASET_NAME = "amazon_reviews_dbt"
 DIR_COMPRESSED = "landing/snap.stanford.edu/data/amazon/productGraph/"
 DIR_DECOMPRESSED = "landing/decompressed/"
