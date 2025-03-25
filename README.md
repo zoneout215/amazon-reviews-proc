@@ -8,15 +8,20 @@ Data pipeline implementation for processing Amazon product reviews using SNAP da
 This pipeline performs ETL operations for category-based review analysis, focusing on top product categories and their performance metrics.
 
 # Table of Contents
-- `airflow/` - Airflow DAGs and plugins
-- `dbt/` - dbt models and configurations
-- `docker-compose.yml` - Docker Compose configuration
-- `README.md` - Project overview and startup manual
-- `Dockerfile` - Airflow webserver Dockerfile
-- `requirements.txt` - Python package requirements for Airflow
-- `output.csv` - Output data mart of the top five rated categories per month with most reviewed products 
-- `local.env` - Environment variables for local testing
-
+- `/airflow/` - Airflow workflow orchestration
+  - `/dags/` - DAG files for data pipeline steps
+  - `/plugins/` - Custom plugins and utilities
+  - `/source_data/` - Local storage for processed data
+- `/dbt/` - dbt models and transformations
+- `/images/` - images folder with screenshots
+- `Dockerfile` - Airflow webserver container definition
+- `docker-compose.yml` - Multi-container orchestration
+- `entrypoint.sh` - Initialization script for Airflow
+- `requirements.txt` - Python dependencies
+- `data_sources.tsv` - Source dataset URLs in GCS tranfer format
+- `local.env` - Environment variables for local setup
+- `output.csv` - Output data mart of top rated categories
+- `README.md` - Project documentation
 
 # Project Overview
 This project is a multi-service data processing platform orchestrated with Docker Compose. It integrates:
