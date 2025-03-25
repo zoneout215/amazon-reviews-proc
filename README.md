@@ -17,6 +17,8 @@ This pipeline performs ETL operations for category-based review analysis, focusi
 - `output.csv` - Output data mart of the top five rated categories per month with most reviewed products 
 - `local.env` - Environment variables for local testing
 
+- `local.env` - Environment variables for local testing
+
 
 # Project Overview
 This project is a multi-service data processing platform orchestrated with Docker Compose. It integrates:
@@ -47,6 +49,8 @@ This project is a multi-service data processing platform orchestrated with Docke
 1. Ensure Docker and Docker Compose are installed.
 2. Install Google Cloud SDK
    Follow the instructions to install the Google Cloud SDK: https://cloud.google.com/sdk/docs/install
+3. Create a GCP Project;
+   Create a new project in the Google Cloud Console: https://console.cloud.google.com/projectcreate. You can use free trial credits if available.
 3. Create a GCP Project;
    Create a new project in the Google Cloud Console: https://console.cloud.google.com/projectcreate. You can use free trial credits if available.
 
@@ -83,6 +87,8 @@ This project is a multi-service data processing platform orchestrated with Docke
 
 9. Access the Airflow web interface at `http://localhost:8080` with credentials from `entrypoint.sh` and trigger the `000_ingestion_gcs` DAG.
 
+9. Access the Airflow web interface at `http://localhost:8080` with credentials from `entrypoint.sh` and trigger the `000_ingestion_gcs` DAG.
+
 ## 2. Airflow Pipeline Steps
 
 The data processing pipeline consists of the following Airflow DAGs:
@@ -115,6 +121,7 @@ Each DAG is designed to run sequentially, with automatic triggering of the next 
 
 
 #TODO: 
+- Test run with time estimation - 2 hours
 - Test run with time estimation - 2 hours
 - Presentation
 - Adjust README.md 
