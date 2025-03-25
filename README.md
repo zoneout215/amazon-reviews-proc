@@ -17,8 +17,6 @@ This pipeline performs ETL operations for category-based review analysis, focusi
 - `output.csv` - Output data mart of the top five rated categories per month with most reviewed products 
 - `local.env` - Environment variables for local testing
 
-- `local.env` - Environment variables for local testing
-
 
 # Project Overview
 This project is a multi-service data processing platform orchestrated with Docker Compose. It integrates:
@@ -49,45 +47,37 @@ This project is a multi-service data processing platform orchestrated with Docke
 1. Ensure Docker and Docker Compose are installed.
 2. Install Google Cloud SDK
    Follow the instructions to install the Google Cloud SDK: https://cloud.google.com/sdk/docs/install
-3. Create a GCP Project;
+3. Create a GCP Project
    Create a new project in the Google Cloud Console: https://console.cloud.google.com/projectcreate. You can use free trial credits if available.
-3. Create a GCP Project;
-   Create a new project in the Google Cloud Console: https://console.cloud.google.com/projectcreate. You can use free trial credits if available.
-
 4. Set the project ID for the Google Cloud SDK:
    ```sh
    gcloud config set project <your-project-id>
    ```
-3. Enable Required APIs
+5. Enable Required APIs
    Enable the necessary Google Cloud APIs:
    ```sh
    gcloud services enable dataflow.googleapis.com
    gcloud services enable bigquery.googleapis.com
    gcloud services enable storage.googleapis.com
    ```
-4. Clone this repository.
-5. For the local test you can limit the number of batches to be processed by changing the `NUMBER_STAG_BATCHES` variable in the `local.env` file.
+6. Clone this repository.
+7. For the local test you can limit the number of batches to be processed by changing the `NUMBER_STAG_BATCHES` variable in the `local.env` file.
    ```yaml
     BUCKET_NAME=<your-bucket-name>
     PROJECT_ID=<your-project-id>
     SERVICE_ACCOUNT=<your-service-account>@<your-project>.iam.gserviceaccount.com
    ```
-6. Create Service Account Key
+8. Create Service Account Key
    Create a service account key for authentication:
    ```sh
    gcloud iam service-accounts keys create OUTPUT_FILE --iam-account <your-service-account>@<your-project>.iam.gserviceaccount.com
    ```
-
-7. Build and start all services:
+9. Build and start all services:
    ```bash
    docker-compose up -d --build
    ```
-
-8. Monitor containers and logs as needed.
-
-9. Access the Airflow web interface at `http://localhost:8080` with credentials from `entrypoint.sh` and trigger the `000_ingestion_gcs` DAG.
-
-9. Access the Airflow web interface at `http://localhost:8080` with credentials from `entrypoint.sh` and trigger the `000_ingestion_gcs` DAG.
+10. Monitor containers and logs as needed.
+11. Access the Airflow web interface at `http://localhost:8080` with credentials from `entrypoint.sh` and trigger the `000_ingestion_gcs` DAG.
 
 ## 2. Airflow Pipeline Steps
 
@@ -121,7 +111,6 @@ Each DAG is designed to run sequentially, with automatic triggering of the next 
 
 
 #TODO: 
-- Test run with time estimation - 2 hours
 - Test run with time estimation - 2 hours
 - Presentation
 - Adjust README.md 
