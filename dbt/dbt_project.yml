@@ -1,26 +1,28 @@
-name: 'movie_rating'
+name: 'amazon_reviews'
 version: '1.0.0'
 config-version: 2
 
-profile: "clickhouse_imdb"
+profile: 'my-bigquery-db'
 
 model-paths: ["models"]
+analysis-paths: ["analyses"]
 test-paths: ["tests"]
-seed-paths: ["data"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+target-path: "target"
 clean-targets:
   - "target"
-  - "dbt/target"
+  - "dbt_packages"
 
 models:
-  movie_rating:
+  amazon_reviews:
     staging:
-      schema: default
+      +materialized: view
     dimensions:
-      schema: default
-#      schema: default
+      +materialized: table
     facts:
-      schema: default
-#      schema: default
+      +materialized: table
     marts:
-      dm_rating:
-        schema: default
+      +materialized: table 

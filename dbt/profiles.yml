@@ -1,13 +1,10 @@
-clickhouse_imdb:
+my-bigquery-db:
   target: dev
   outputs:
     dev:
-      type: clickhouse
-      schema: default
-      host: clickhouse-server
-      port: 8123
-      user: default
-      password: ''
-      secure: False
-
-      
+      type: bigquery
+      method: service-account
+      project: e-analogy-449921-p7
+      dataset: amazon_reviews_dbt
+      threads: 4 # Must be a value of 1 or greater
+      keyfile: ../application_default_credentials.json
