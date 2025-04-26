@@ -1,4 +1,7 @@
-# Amazon Reviews Data Pipeline & Analytics
+# Data Engineering pipiline petproject
+
+This repository presents the a solution for ETL pipeline based on Amazon Reviews data. The purpose of it is mainly for practice and showcasing dataengineering approach. The pipeline outputs and insight over a top 5 rated categories for Amazon products for each month in the time frame of 1994 to 2014.
+
 
 Data pipeline implementation for processing Amazon product reviews using SNAP dataset (2018):
 - Reviews [source](https://snap.stanford.edu/data/amazon/productGraph/item_dedup.json.gz);
