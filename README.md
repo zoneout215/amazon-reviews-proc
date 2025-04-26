@@ -1,4 +1,4 @@
-# Data Engineering pipeline petproject
+# ETL pipeline project
 
 This repository presents the a solution for ETL pipeline based on Amazon Reviews data. The purpose of it is mainly for practice and showcasing dataengineering approach. The pipeline outputs and insight over a top 5 rated categories for Amazon products for each month in the time frame of 1994 to 2014.
 
